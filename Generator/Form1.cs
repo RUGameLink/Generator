@@ -14,14 +14,14 @@ namespace Generator
 {
     public partial class Form1 : Form
     {
-        readonly string[] violationGroup;
+        readonly string[] violationGroup; //Группа нарушений
 
-        readonly string[] violationType1;
+        readonly string[] violationType1; //Первый тип нарушения
         readonly string[] violationType2;
         readonly string[] violationType3;
         readonly string[] violationType4;
 
-        readonly string[] cuptureOffernder;
+        readonly string[] cuptureOffernder; //Последствия (что придумал)
 
         public Form1()
         {
@@ -106,26 +106,7 @@ namespace Generator
 
                 SqlConnection connection = new();
 
-                switch (cmbSel.SelectedIndex)
-                {
-                    case 0:
-                        {
-                            SqlConnectionStringBuilder sqlConnectionStringBuilder = new();
-                            sqlConnectionStringBuilder.DataSource = @"(LocalDB)\MSSQLLocalDB";
-                            //   sqlConnectionStringBuilder.InitialCatalog = txtConnectionString.Text;
-                            sqlConnectionStringBuilder.AttachDBFilename = openFileDialog1.FileName;
-                            sqlConnectionStringBuilder.IntegratedSecurity = true;
-                            sqlConnectionStringBuilder.ConnectTimeout = 30;
-                            connection.ConnectionString = sqlConnectionStringBuilder.ToString();
-                        }
-                        break;
-                    case 1:
-                        {
-                            connection.ConnectionString = txtConnectionString.Text;
-
-                        }
-                        break;
-                }
+                connection = GetConnection();
 
 
                 connection.Open();
@@ -155,7 +136,6 @@ namespace Generator
                     {
                         SqlConnectionStringBuilder sqlConnectionStringBuilder = new();
                         sqlConnectionStringBuilder.DataSource = @"(LocalDB)\MSSQLLocalDB";
-                        //   sqlConnectionStringBuilder.InitialCatalog = txtConnectionString.Text;
                         sqlConnectionStringBuilder.AttachDBFilename = openFileDialog1.FileName;
                         sqlConnectionStringBuilder.IntegratedSecurity = true;
                         sqlConnectionStringBuilder.ConnectTimeout = 30;
