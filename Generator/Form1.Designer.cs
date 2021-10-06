@@ -38,6 +38,12 @@ namespace Generator
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.btnDelViol = new System.Windows.Forms.Button();
+            this.btnGetViol = new System.Windows.Forms.Button();
+            this.btnDelCar = new System.Windows.Forms.Button();
+            this.btnGetCar = new System.Windows.Forms.Button();
+            this.btnDelDriver = new System.Windows.Forms.Button();
+            this.btnGetDriver = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -163,6 +169,12 @@ namespace Generator
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.btnDelViol);
+            this.tabPage1.Controls.Add(this.btnGetViol);
+            this.tabPage1.Controls.Add(this.btnDelCar);
+            this.tabPage1.Controls.Add(this.btnGetCar);
+            this.tabPage1.Controls.Add(this.btnDelDriver);
+            this.tabPage1.Controls.Add(this.btnGetDriver);
             this.tabPage1.Controls.Add(this.txtQuery);
             this.tabPage1.Controls.Add(this.cmbSel);
             this.tabPage1.Controls.Add(this.dgName);
@@ -174,6 +186,66 @@ namespace Generator
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Запросы";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // btnDelViol
+            // 
+            this.btnDelViol.Location = new System.Drawing.Point(408, 241);
+            this.btnDelViol.Name = "btnDelViol";
+            this.btnDelViol.Size = new System.Drawing.Size(72, 41);
+            this.btnDelViol.TabIndex = 10;
+            this.btnDelViol.Text = "Удалить Нарушения";
+            this.btnDelViol.UseVisualStyleBackColor = true;
+            this.btnDelViol.Click += new System.EventHandler(this.btnActionSql_Click);
+            // 
+            // btnGetViol
+            // 
+            this.btnGetViol.Location = new System.Drawing.Point(329, 241);
+            this.btnGetViol.Name = "btnGetViol";
+            this.btnGetViol.Size = new System.Drawing.Size(73, 41);
+            this.btnGetViol.TabIndex = 9;
+            this.btnGetViol.Text = "Выдать Нарушения";
+            this.btnGetViol.UseVisualStyleBackColor = true;
+            this.btnGetViol.Click += new System.EventHandler(this.btnActionSql_Click);
+            // 
+            // btnDelCar
+            // 
+            this.btnDelCar.Location = new System.Drawing.Point(249, 241);
+            this.btnDelCar.Name = "btnDelCar";
+            this.btnDelCar.Size = new System.Drawing.Size(74, 42);
+            this.btnDelCar.TabIndex = 8;
+            this.btnDelCar.Text = "Удалить автомобили";
+            this.btnDelCar.UseVisualStyleBackColor = true;
+            this.btnDelCar.Click += new System.EventHandler(this.btnActionSql_Click);
+            // 
+            // btnGetCar
+            // 
+            this.btnGetCar.Location = new System.Drawing.Point(168, 240);
+            this.btnGetCar.Name = "btnGetCar";
+            this.btnGetCar.Size = new System.Drawing.Size(75, 43);
+            this.btnGetCar.TabIndex = 7;
+            this.btnGetCar.Text = "Выдать автомобили";
+            this.btnGetCar.UseVisualStyleBackColor = true;
+            this.btnGetCar.Click += new System.EventHandler(this.btnActionSql_Click);
+            // 
+            // btnDelDriver
+            // 
+            this.btnDelDriver.Location = new System.Drawing.Point(87, 238);
+            this.btnDelDriver.Name = "btnDelDriver";
+            this.btnDelDriver.Size = new System.Drawing.Size(75, 44);
+            this.btnDelDriver.TabIndex = 6;
+            this.btnDelDriver.Text = "Удалить Водителей";
+            this.btnDelDriver.UseVisualStyleBackColor = true;
+            this.btnDelDriver.Click += new System.EventHandler(this.btnActionSql_Click);
+            // 
+            // btnGetDriver
+            // 
+            this.btnGetDriver.Location = new System.Drawing.Point(6, 237);
+            this.btnGetDriver.Name = "btnGetDriver";
+            this.btnGetDriver.Size = new System.Drawing.Size(75, 46);
+            this.btnGetDriver.TabIndex = 5;
+            this.btnGetDriver.Text = "Выдать Водителей";
+            this.btnGetDriver.UseVisualStyleBackColor = true;
+            this.btnGetDriver.Click += new System.EventHandler(this.btnActionSql_Click);
             // 
             // tabPage2
             // 
@@ -599,6 +671,12 @@ namespace Generator
         private System.Windows.Forms.Label lblViol;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown upCountViol;
+        private System.Windows.Forms.Button btnDelViol;
+        private System.Windows.Forms.Button btnGetViol;
+        private System.Windows.Forms.Button btnDelCar;
+        private System.Windows.Forms.Button btnGetCar;
+        private System.Windows.Forms.Button btnDelDriver;
+        private System.Windows.Forms.Button btnGetDriver;
     }
 }
 

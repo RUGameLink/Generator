@@ -481,5 +481,54 @@ namespace Generator
                 }
             }
         }
+
+        private void btnActionSql_Click(object sender, EventArgs e)
+        {
+            var button = sender as Button;
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                SqlCommand sqlCommand;
+                switch (button.Name)
+                {
+                    case "btnGetDriver":
+                        {
+                            sqlCommand = new("select * from Driver", connection);
+                        }
+                        break;
+                    case "btnDelDriver":
+                        {
+                            sqlCommand = new("delete Driver", connection);
+                        }
+                        break;
+                    case "btnGetCar":
+                        {
+                            sqlCommand = new("select * from Car", connection);
+                        }
+                        break;
+                    case "btnDelCar":
+                        {
+                            sqlCommand = new("delete Car", connection);
+                        }
+                        break;
+                    case "btnGetViol":
+                        {
+                            sqlCommand = new("select * from Violation", connection);
+                        }
+                        break;
+                    default:
+                        {
+                            sqlCommand = new("delete Violation", connection);
+                        }
+                        break;
+                }
+                var reader = sqlCommand.ExecuteReader();
+                DataTable table = new();
+                table.Load(reader);
+                dgName.DataSource = table;
+                reader.Close();
+                connection.Close();
+            }
+        }
     }
 }
