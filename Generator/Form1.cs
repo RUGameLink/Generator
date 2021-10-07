@@ -28,9 +28,10 @@ namespace Generator
             InitializeComponent();
             cmbSel.SelectedIndex = 1;
             cmbSel.DropDownStyle = ComboBoxStyle.DropDownList;
-            openFileDialog1.Filter = "mdf files(*mdf)|*mdf|All files(*.*)|*.*";
+            openFileDialog1.Filter = "mdf files(*mdf)|*mdf|All files(*.*)|*.*"; //Тип файла
             BindTrackBars();
 
+            //Заполнение групп
             violationGroup = new string[]
             {
                 "Пересечение",
@@ -84,18 +85,18 @@ namespace Generator
 
         string filename;
 
-        struct Range
-        {
-            public double min;
-            public double max;
+        //struct Range
+        //{
+        //    public double min;
+        //    public double max;
 
-            public bool CheckContains(double value)
-            {
-                return min <= value && value <= max;
-            }
-        }
+        //    public bool CheckContains(double value)
+        //    {
+        //        return min <= value && value <= max;
+        //    }
+        //}
 
-        private void btnQuery_Click(object sender, EventArgs e)
+        private void btnQuery_Click(object sender, EventArgs e) //Выдача запросов
         {
             if (txtConnectionString.Text == "" || txtQuery.Text == "")
             {
@@ -127,12 +128,12 @@ namespace Generator
             }
         }
 
-        SqlConnection GetConnection()
+        SqlConnection GetConnection() //Коннектор
         {
             SqlConnection connection = new();
             switch (cmbSel.SelectedIndex)
             {
-                case 0:
+                case 0: //К локалке
                     {
                         SqlConnectionStringBuilder sqlConnectionStringBuilder = new();
                         sqlConnectionStringBuilder.DataSource = @"(LocalDB)\MSSQLLocalDB";
@@ -142,7 +143,7 @@ namespace Generator
                         connection.ConnectionString = sqlConnectionStringBuilder.ToString();
                     }
                     break;
-                case 1:
+                case 1: //К сетевой
                     {
                         connection.ConnectionString = txtConnectionString.Text;
 
@@ -152,7 +153,7 @@ namespace Generator
             return connection;
         }
 
-        private void cmbSel_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmbSel_SelectedIndexChanged(object sender, EventArgs e) //Работа кнопки выбора локальных БД
         {
             switch (cmbSel.SelectedIndex)
             {
@@ -169,7 +170,7 @@ namespace Generator
             }
         }
 
-        private void btnSelect_Click(object sender, EventArgs e)
+        private void btnSelect_Click(object sender, EventArgs e) //Выбор локальной БД
         {
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
@@ -178,7 +179,7 @@ namespace Generator
             txtConnectionString.Text = filename;
         }
 
-        private void btnGenerate_Click(object sender, EventArgs e)
+        private void btnGenerate_Click(object sender, EventArgs e) //Генератор Водителей
         {
             using (var connection = GetConnection())
             {
@@ -189,8 +190,6 @@ namespace Generator
                 // создаем генератор случайных чисел
                 Random rnd = new();
 
-                // и начинаем в цикле создавать записи в БД,
-                // в цикле повторяем по количеству записей указанных в поле udCount
                 for (var i = 0; i < upCount.Value; ++i)
                 {
                    
@@ -230,7 +229,7 @@ namespace Generator
             }
         }
 
-        private void btnGenerate2_Click(object sender, EventArgs e)
+        private void btnGenerate2_Click(object sender, EventArgs e) //Генератор Автомобилей
         {
             using (var connection = GetConnection())
             {
@@ -238,11 +237,10 @@ namespace Generator
                 pbDrGenerator2.Maximum = (int)upCount2.Value; // ставим максимальное
                 connection.Open();
 
-                // создаем генератор случайных чисел
+
                 Random rnd = new();
 
-                // и начинаем в цикле создавать записи в БД,
-                // в цикле повторяем по количеству записей указанных в поле udCount
+
                 for (var i = 0; i < upCount2.Value; ++i)
                 {
 
@@ -252,6 +250,7 @@ namespace Generator
                     string fName = "";
                     string region = "";
                     string model = "";
+                    string carNumber = "";
                     //тут генерим все рандомные значения
                     Faker faker = new("ru");
                     if (gender == "муж")
@@ -262,14 +261,15 @@ namespace Generator
                     {
                         fName = faker.Name.FullName(Bogus.DataSets.Name.Gender.Female);
                     }
-                    model = faker.Vehicle.Model();
+                    model = $"{faker.Vehicle.Manufacturer()} {faker.Vehicle.Model()}";
+                    carNumber = faker.Vehicle.Vin();
                     region = faker.Address.FullAddress();
                     try
                     {
                         SqlCommand command = new(@$"insert Car 
                         values ({rnd.Next(100000, 9999999)}, {rnd.Next(100000, 9999999)}, '{fName}', '{model}', 
-                        {rnd.Next(100000, 9999999)}, {rnd.Next(100000, 9999999)}, '{region}', {rnd.Next(100000, 999999999)})"
-                        , connection);
+                        '{carNumber}', {rnd.Next(100000, 9999999)}, '{region}', 
+                        {rnd.Next(100000, 999999999)})", connection);
                         command.ExecuteNonQuery();
                     }
                     catch (Exception ex)
@@ -278,14 +278,14 @@ namespace Generator
                     }
 
 
-                    pbDrGenerator2.Value++;
+                pbDrGenerator2.Value++;
                 }
                 connection.Close();
                 MessageBox.Show("Все готово, мой лорд");
             }
         }
 
-        private void UpdateLabelForTrackbar(TrackBar tb, Label lbl)
+        private void UpdateLabelForTrackbar(TrackBar tb, Label lbl)//Пределы значений ползунков (визуализатор)
         {
             if (tb.Minimum != tb.Value)
             {
@@ -297,7 +297,7 @@ namespace Generator
             }
         }
 
-        private void BindTrackBars()
+        private void BindTrackBars()//Пределы значений ползунков Генератора Нарушений
         {
             // тут я добавляю реакцию на изменение значений
             tbQuantityGr.ValueChanged += (e, o) => UpdateLabelForTrackbar(tbQuantityGr, lblQuantityGr);
@@ -311,7 +311,7 @@ namespace Generator
             UpdateLabelForTrackbar(tbViolCup, lblViol);
         }
 
-        private void btGenerateViol_Click(object sender, EventArgs e)
+        private void btGenerateViol_Click(object sender, EventArgs e) //Генератор Нарушений
         {
             using (var connection = GetConnection())
             {
@@ -330,10 +330,10 @@ namespace Generator
             MessageBox.Show("Все готово, мой лорд");
         }
 
-        private void GenerateViolation(SqlConnection connection)
+        private void GenerateViolation(SqlConnection connection) //Генератор Нарушений
         {
             Random rnd = new();
-            // генерим имя
+
             Faker faker = new("ru");
             string viol = violationGroup[rnd.Next(0, violationGroup.Length)];
 
@@ -343,14 +343,14 @@ namespace Generator
 
             var violTypeCount = rnd.Next(tbQuantity.Minimum, tbQuantity.Value + 1);
             for (var a = 1; a <= violCount; ++a)
-            {
-                SqlCommand command = new($@"INSERT  Violation OUTPUT inserted.id VALUES(@viol, null, null, null)", connection);
+            {//Первый уровень иерархии
+                SqlCommand command = new($@"INSERT  Violation OUTPUT inserted.id VALUES(@viol, null)", connection); 
                 command.Parameters.Add("@viol", SqlDbType.Text);
                 command.Parameters["@viol"].Value = viol;
 
                 int violId = (int)command.ExecuteScalar();
 
-                // ну и вызываем уже привычный нам insert
+
                 for (var i = 1; i <= violTypeCount; ++i)
                 {
                     switch (viol)
@@ -376,23 +376,14 @@ namespace Generator
                             }
                             break;
                     }
-                //    command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, null, null, @violId)", connection);
-                //    command.Parameters.Add("@violType", SqlDbType.Text);
-                //    command.Parameters["@violType"].Value = violType;
-                 //   command.Parameters.Add("@violId", SqlDbType.Int);
-                 //   command.Parameters["@violId"].Value = violId;
 
                     if (chkHasAff.Checked && chkHasKill.Checked)
-                    {
+                    {//Второй уровень иерархии
                         var affected = faker.Random.Int(1, 10);
                         var killed = faker.Random.Int(1, 10);
-                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @affected, @killed, @violId)", connection);
+                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
                         command.Parameters.Add("@violType", SqlDbType.Text);
-                        command.Parameters["@violType"].Value = violType;
-                        command.Parameters.Add("@affected", SqlDbType.Int);
-                        command.Parameters["@affected"].Value = affected;
-                        command.Parameters.Add("@killed", SqlDbType.Int);
-                        command.Parameters["@killed"].Value = killed;
+                        command.Parameters["@violType"].Value = violType + $" Пострадавшие: {affected}, Смертей: {killed}";
                         command.Parameters.Add("@violId", SqlDbType.Int);
                         command.Parameters["@violId"].Value = violId;
                     }
@@ -400,13 +391,9 @@ namespace Generator
                     {
                         var affected = faker.Random.Int(1, 10);
                         var killed = 0;
-                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @affected, @killed, @violId)", connection);
+                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
                         command.Parameters.Add("@violType", SqlDbType.Text);
-                        command.Parameters["@violType"].Value = violType;
-                        command.Parameters.Add("@affected", SqlDbType.Int);
-                        command.Parameters["@affected"].Value = affected;
-                        command.Parameters.Add("@killed", SqlDbType.Int);
-                        command.Parameters["@killed"].Value = killed;
+                        command.Parameters["@violType"].Value = violType + $" Пострадавшие: {affected}, Смертей: {killed}";
                         command.Parameters.Add("@violId", SqlDbType.Int);
                         command.Parameters["@violId"].Value = violId;
                     }
@@ -416,11 +403,7 @@ namespace Generator
                         var killed = faker.Random.Int(1, 10);
                         command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @affected, @killed, @violId)", connection);
                         command.Parameters.Add("@violType", SqlDbType.Text);
-                        command.Parameters["@violType"].Value = violType;
-                        command.Parameters.Add("@affected", SqlDbType.Int);
-                        command.Parameters["@affected"].Value = affected;
-                        command.Parameters.Add("@killed", SqlDbType.Int);
-                        command.Parameters["@killed"].Value = killed;
+                        command.Parameters["@violType"].Value = violType + $" Пострадавшие: {affected}, Смертей: {killed}";
                         command.Parameters.Add("@violId", SqlDbType.Int);
                         command.Parameters["@violId"].Value = violId;
                     }
@@ -428,13 +411,9 @@ namespace Generator
                     {
                         var affected = 0;
                         var killed = 0;
-                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @affected, @killed, @violId)", connection);
+                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
                         command.Parameters.Add("@violType", SqlDbType.Text);
-                        command.Parameters["@violType"].Value = violType;
-                        command.Parameters.Add("@affected", SqlDbType.Int);
-                        command.Parameters["@affected"].Value = affected;
-                        command.Parameters.Add("@killed", SqlDbType.Int);
-                        command.Parameters["@killed"].Value = killed;
+                        command.Parameters["@violType"].Value = violType + $" Пострадавшие: {affected}, Смертей: {killed}";
                         command.Parameters.Add("@violId", SqlDbType.Int);
                         command.Parameters["@violId"].Value = violId;
                     }
@@ -446,10 +425,10 @@ namespace Generator
                     var cuptureCount = rnd.Next(tbViolCup.Minimum, tbViolCup.Value + 1);
 
                     for (var j = 1; j <= cuptureCount; ++j)
-                    {
+                    {//Третий уровень иерархии
                         string cupture = cuptureOffernder[rnd.Next(0, cuptureOffernder.Length)];
 
-                        command = new($@"INSERT INTO Violation VALUES(@cupture, null, null, @violTypeId)", connection);
+                        command = new($@"INSERT INTO Violation VALUES(@cupture, @violTypeId)", connection);
                         command.Parameters.Add("@cupture", SqlDbType.Text);
                         command.Parameters["@cupture"].Value = cupture;
                         command.Parameters.Add("@violTypeId", SqlDbType.Int);
@@ -462,7 +441,7 @@ namespace Generator
             }
         }
 
-        private void btnActionSql_Click(object sender, EventArgs e)
+        private void btnActionSql_Click(object sender, EventArgs e) //Обслуживание кнопок Выдачи и Удаления
         {
             var button = sender as Button;
             using (var connection = GetConnection())

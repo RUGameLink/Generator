@@ -135,9 +135,9 @@ namespace Generator
             this.cmbSel.Items.AddRange(new object[] {
             "Локальное подключение",
             "Подключение к серверу"});
-            this.cmbSel.Location = new System.Drawing.Point(504, 249);
+            this.cmbSel.Location = new System.Drawing.Point(518, 249);
             this.cmbSel.Name = "cmbSel";
-            this.cmbSel.Size = new System.Drawing.Size(189, 23);
+            this.cmbSel.Size = new System.Drawing.Size(175, 23);
             this.cmbSel.TabIndex = 4;
             this.cmbSel.SelectedIndexChanged += new System.EventHandler(this.cmbSel_SelectedIndexChanged);
             // 
@@ -189,9 +189,9 @@ namespace Generator
             // 
             // btnDelViol
             // 
-            this.btnDelViol.Location = new System.Drawing.Point(408, 241);
+            this.btnDelViol.Location = new System.Drawing.Point(422, 241);
             this.btnDelViol.Name = "btnDelViol";
-            this.btnDelViol.Size = new System.Drawing.Size(72, 41);
+            this.btnDelViol.Size = new System.Drawing.Size(90, 41);
             this.btnDelViol.TabIndex = 10;
             this.btnDelViol.Text = "Удалить Нарушения";
             this.btnDelViol.UseVisualStyleBackColor = true;
@@ -201,7 +201,7 @@ namespace Generator
             // 
             this.btnGetViol.Location = new System.Drawing.Point(329, 241);
             this.btnGetViol.Name = "btnGetViol";
-            this.btnGetViol.Size = new System.Drawing.Size(73, 41);
+            this.btnGetViol.Size = new System.Drawing.Size(87, 41);
             this.btnGetViol.TabIndex = 9;
             this.btnGetViol.Text = "Выдать Нарушения";
             this.btnGetViol.UseVisualStyleBackColor = true;
@@ -319,7 +319,7 @@ namespace Generator
             // 
             this.upCount.Location = new System.Drawing.Point(12, 351);
             this.upCount.Maximum = new decimal(new int[] {
-            100000,
+            1000000,
             0,
             0,
             0});
@@ -382,6 +382,11 @@ namespace Generator
             // upCount2
             // 
             this.upCount2.Location = new System.Drawing.Point(16, 348);
+            this.upCount2.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
             this.upCount2.Minimum = new decimal(new int[] {
             1,
             0,
@@ -458,7 +463,7 @@ namespace Generator
             // 
             this.upCountViol.Location = new System.Drawing.Point(14, 362);
             this.upCountViol.Maximum = new decimal(new int[] {
-            100000,
+            1000000,
             0,
             0,
             0});
