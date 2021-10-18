@@ -29,6 +29,7 @@ namespace Generator
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.txtConnectionString = new System.Windows.Forms.TextBox();
             this.txtQuery = new System.Windows.Forms.TextBox();
             this.dgName = new System.Windows.Forms.DataGridView();
@@ -76,6 +77,9 @@ namespace Generator
             this.tbViolCup = new System.Windows.Forms.TrackBar();
             this.tbQuantity = new System.Windows.Forms.TrackBar();
             this.tbQuantityGr = new System.Windows.Forms.TrackBar();
+            this.label10 = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.lblStatistics = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgName)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -297,7 +301,7 @@ namespace Generator
             this.btnGenerate.TabIndex = 8;
             this.btnGenerate.Text = "Сгенерировать";
             this.btnGenerate.UseVisualStyleBackColor = true;
-            this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
+            this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_ClickAsync);
             // 
             // tbGender
             // 
@@ -583,7 +587,7 @@ namespace Generator
             // tbQuantity
             // 
             this.tbQuantity.Location = new System.Drawing.Point(138, 215);
-            this.tbQuantity.Maximum = 3;
+            this.tbQuantity.Maximum = 5;
             this.tbQuantity.Minimum = 1;
             this.tbQuantity.Name = "tbQuantity";
             this.tbQuantity.Size = new System.Drawing.Size(669, 45);
@@ -600,11 +604,38 @@ namespace Generator
             this.tbQuantityGr.TabIndex = 0;
             this.tbQuantityGr.Value = 1;
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label10.Location = new System.Drawing.Point(891, 18);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(134, 32);
+            this.label10.TabIndex = 8;
+            this.label10.Text = "Статистика";
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // lblStatistics
+            // 
+            this.lblStatistics.Location = new System.Drawing.Point(891, 77);
+            this.lblStatistics.Name = "lblStatistics";
+            this.lblStatistics.ReadOnly = true;
+            this.lblStatistics.Size = new System.Drawing.Size(260, 433);
+            this.lblStatistics.TabIndex = 9;
+            this.lblStatistics.Text = "";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(907, 526);
+            this.ClientSize = new System.Drawing.Size(1163, 526);
+            this.Controls.Add(this.lblStatistics);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnSelect);
             this.Controls.Add(this.txtConnectionString);
@@ -682,6 +713,9 @@ namespace Generator
         private System.Windows.Forms.Button btnGetCar;
         private System.Windows.Forms.Button btnDelDriver;
         private System.Windows.Forms.Button btnGetDriver;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.RichTextBox lblStatistics;
     }
 }
 
