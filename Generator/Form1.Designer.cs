@@ -80,6 +80,7 @@ namespace Generator
             this.label10 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.lblStatistics = new System.Windows.Forms.RichTextBox();
+            this.lblLoad = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgName)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -173,6 +174,7 @@ namespace Generator
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.lblLoad);
             this.tabPage1.Controls.Add(this.btnDelViol);
             this.tabPage1.Controls.Add(this.btnGetViol);
             this.tabPage1.Controls.Add(this.btnDelCar);
@@ -629,6 +631,17 @@ namespace Generator
             this.lblStatistics.TabIndex = 9;
             this.lblStatistics.Text = "";
             // 
+            // lblLoad
+            // 
+            this.lblLoad.AutoSize = true;
+            this.lblLoad.ForeColor = System.Drawing.Color.Red;
+            this.lblLoad.Location = new System.Drawing.Point(519, 237);
+            this.lblLoad.Name = "lblLoad";
+            this.lblLoad.Size = new System.Drawing.Size(64, 15);
+            this.lblLoad.TabIndex = 11;
+            this.lblLoad.Text = "Загрузка...";
+            this.lblLoad.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -716,6 +729,7 @@ namespace Generator
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.RichTextBox lblStatistics;
+        private System.Windows.Forms.Label lblLoad;
     }
 }
 

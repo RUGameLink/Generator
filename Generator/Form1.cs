@@ -22,6 +22,9 @@ namespace Generator
         readonly string[] violationType3;
         readonly string[] violationType4;
 
+        SqlDataReader reader;
+        DataTable table;
+
         readonly string[] cuptureOffernder; //Последствия (что придумал)
 
         public Form1()
@@ -99,7 +102,7 @@ namespace Generator
         //    }
         //}
 
-        private void btnQuery_Click(object sender, EventArgs e) //Выдача запросов
+        private async void btnQuery_Click(object sender, EventArgs e) //Выдача запросов
         {
             if (txtConnectionString.Text == "" || txtQuery.Text == "")
             {
@@ -111,24 +114,35 @@ namespace Generator
                 SqlConnection connection = new();
 
                 connection = GetConnection();
+                string query = txtQuery.Text;
+                btnMaster();
 
+                await Task.Run(() =>
+                {
+                    ActionQuery(connection, query);
+                });
+                btnMaster();
 
-                connection.Open();
-
-                SqlCommand command = new();
-                command.Connection = connection;
-                command.CommandText = txtQuery.Text;
-
-                var reader = command.ExecuteReader();
-
-                DataTable table = new();
-                table.Load(reader);
                 dgName.DataSource = table;
 
-                reader.Close();
 
-                connection.Close();
             }
+        }
+
+        private void ActionQuery(SqlConnection connection, string query)
+        {
+            connection.Open();
+
+            SqlCommand command = new();
+            command.Connection = connection;
+            command.CommandText = query;
+
+            reader = command.ExecuteReader();
+            table = new();
+            table.Load(reader);
+            reader.Close();
+
+            connection.Close();
         }
 
         SqlConnection GetConnection() //Коннектор
@@ -591,15 +605,42 @@ namespace Generator
                         command.ExecuteNonQuery();
                     }
 
-
                 }
             }
         }
 
-        private void btnActionSql_Click(object sender, EventArgs e) //Обслуживание кнопок Выдачи и Удаления
+        private async  void btnActionSql_Click(object sender, EventArgs e) //Обслуживание кнопок Выдачи и Удаления
         {
             var button = sender as Button;
-            using (var connection = GetConnection())
+            var connection = GetConnection();
+
+            btnMaster();
+
+            await Task.Run(() =>
+            {
+                ActionSql(connection, button);
+            });
+            dgName.DataSource = table;
+            btnMaster();
+        }
+
+        private void btnMaster()
+        {
+            btnGetDriver.Enabled = !btnGetDriver.Enabled;
+            btnGetCar.Enabled = !btnGetCar.Enabled;
+            btnGetViol.Enabled = !btnGetViol.Enabled;
+            btnDelDriver.Enabled = !btnDelDriver.Enabled;
+            btnDelCar.Enabled = !btnDelCar.Enabled;
+            btnDelViol.Enabled = !btnDelViol.Enabled;
+            btnQuery.Enabled = !btnQuery.Enabled;
+            cmbSel.Enabled = !cmbSel.Enabled;
+            lblLoad.Visible = !lblLoad.Visible;
+        }
+
+        private void ActionSql(SqlConnection connection, Button button)
+        {
+
+            using (connection)
             {
                 connection.Open();
                 SqlCommand sqlCommand;
@@ -636,10 +677,10 @@ namespace Generator
                         }
                         break;
                 }
-                var reader = sqlCommand.ExecuteReader();
-                DataTable table = new();
+                reader = sqlCommand.ExecuteReader();
+                table = new();
                 table.Load(reader);
-                dgName.DataSource = table;
+
                 reader.Close();
                 connection.Close();
             }
