@@ -22,6 +22,12 @@ namespace Generator
         readonly string[] violationType3;
         readonly string[] violationType4;
 
+        public struct progressInfo
+        {
+            public int value;
+            public string info;
+        }
+
         SqlDataReader reader;
         DataTable table;
 
@@ -30,6 +36,7 @@ namespace Generator
         public Form1()
         {
             InitializeComponent();
+            ThreadPool.SetMinThreads(80, 80);
             cmbSel.SelectedIndex = 1;
             cmbSel.DropDownStyle = ComboBoxStyle.DropDownList;
             openFileDialog1.Filter = "mdf files(*mdf)|*mdf|All files(*.*)|*.*"; //Тип файла
@@ -213,10 +220,15 @@ namespace Generator
             double genderValue = (double)tbGender.Value;
             int count = (int)upCount.Value;
 
-            var progress = new Progress<int>(value =>
+            //var progress = new Progress<int>(value =>
+            //{
+            //    // меняем значение прогрессбара
+            //    pbDrGenerator.Value = value;
+            //});
+            var progress = new Progress<progressInfo>(progress =>
             {
-                // меняем значение прогрессбара
-                pbDrGenerator.Value = value;
+                pbDrGenerator.Value = progress.value; // прогресс пихаем в прогресс бар
+                lblDrInfo.Text = progress.info; // а текст пихаем в лейбл
             });
 
             await Task.Run(() => 
@@ -231,13 +243,19 @@ namespace Generator
         private void generateDrivers(SqlConnection connection, 
                                      double genderValue, 
                                      int count, 
-                                     IProgress<int> progress, 
+                                     IProgress<progressInfo> progress, 
                                      CancellationTokenSource cancellationToken)
         {
 
             using (connection)
             {
                 connection.Open();
+                SqlTransaction transaction = null;
+                if (chkbDrTrans.Checked)
+                {
+                    transaction = connection.BeginTransaction();
+                }
+                SqlCommand command;
 
                 // создаем генератор случайных чисел
                 Random rnd = new();
@@ -263,10 +281,17 @@ namespace Generator
                     region = faker.Address.FullAddress();
                     try
                     {
-                        SqlCommand command = new(@$"insert Driver 
+                        command = new(@$"insert Driver 
                         values ('{fName}', '{region}', {rnd.Next(100000, 999999999)})"
                         , connection);
+
+                        if (chkbDrTrans.Checked)
+                        {
+                            command.Transaction = transaction;
+                            
+                        }
                         command.ExecuteNonQuery();
+
                     }
                     catch (Exception ex)
                     {
@@ -278,9 +303,26 @@ namespace Generator
                         return; // то выходим их функции
                     }
 
-                    progress?.Report(i + 1);
-                    Thread.Sleep(300);
+                    //   progress?.Report(i + 1);
+
+                    command = new("SELECT count(*) FROM Driver", connection);
+                    if (chkbDrTrans.Checked)
+                        command.Transaction = transaction;
+
+                    var info = $"Водитей в транзакции {command.ExecuteScalar()}";
+                    progress?.Report(new progressInfo
+                    {
+                        value = i + 1,
+                        info = info,
+                    });
+
+                    Thread.Sleep(30);
                 }
+                if (chkbDrTrans.Checked)
+                {
+                    transaction.Commit();
+                }
+
                 connection.Close();
                 MessageBox.Show("Все готово, мой лорд");
             }
@@ -303,10 +345,15 @@ namespace Generator
             int count = (int)upCount2.Value;
             double genderOwner = (double)tbGender2.Value;
 
-            var progress = new Progress<int>(value =>
+            //var progress = new Progress<int>(value =>
+            //{
+            //    // меняем значение прогрессбара
+            //    pbDrGenerator2.Value = value;
+            //});
+            var progress = new Progress<progressInfo>(progress =>
             {
-                // меняем значение прогрессбара
-                pbDrGenerator2.Value = value;
+                pbDrGenerator2.Value = progress.value; // прогресс пихаем в прогресс бар
+                lblDrInfo2.Text = progress.info; // а текст пихаем в лейбл
             });
 
             await Task.Run(() => 
@@ -321,14 +368,20 @@ namespace Generator
         private void generateCars(SqlConnection connection, 
                                   int count, 
                                   double genderOwner, 
-                                  IProgress<int> progress,
+                                  IProgress<progressInfo> progress,
                                   CancellationTokenSource cancellationToken)
         {
             using (connection)
             {
 
                 connection.Open();
+                SqlCommand command = null;
+                SqlTransaction transaction = null;
 
+                if (chkbCarTrans.Checked)
+                {
+                    transaction = connection.BeginTransaction();
+                }
 
                 Random rnd = new();
 
@@ -358,10 +411,16 @@ namespace Generator
                     region = faker.Address.FullAddress();
                     try
                     {
-                        SqlCommand command = new(@$"insert Car 
+                        command = new(@$"insert Car 
                         values ({rnd.Next(100000, 9999999)}, {rnd.Next(100000, 9999999)}, '{fName}', '{model}', 
                         '{carNumber}', {rnd.Next(100000, 9999999)}, '{region}', 
                         {rnd.Next(100000, 999999999)})", connection);
+
+                        if (chkbCarTrans.Checked)
+                        {
+                            command.Transaction = transaction;
+
+                        }
                         command.ExecuteNonQuery();
                     }
                     catch (Exception ex)
@@ -375,9 +434,26 @@ namespace Generator
                         return; // то выходим их функции
                     }
 
-                    progress?.Report(i + 1);
-                    Thread.Sleep(300);
+                    //progress?.Report(i + 1);
+                    command = new("SELECT count(*) FROM Car", connection);
+
+                    if (chkbCarTrans.Checked)
+                        command.Transaction = transaction;
+
+                    var info = $"Автомобилей в транзакции {command.ExecuteScalar()}";
+                    progress?.Report(new progressInfo
+                    {
+                        value = i + 1,
+                        info = info,
+                    });
+
+                    Thread.Sleep(30);
                 }
+                if (chkbCarTrans.Checked)
+                {
+                    transaction.Commit();
+                }
+
                 connection.Close();
                 MessageBox.Show("Все готово, мой лорд");
             }
@@ -480,7 +556,7 @@ namespace Generator
                     }
 
                     progress?.Report(i + 1);
-                    Thread.Sleep(300);
+                    Thread.Sleep(30);
                 }
 
                 connection.Close();
@@ -692,6 +768,8 @@ namespace Generator
 
             using (connection)
             {
+                try
+                {
                 connection.Open();
 
                 var command = new SqlCommand("SELECT count(*) FROM Car", connection);
@@ -707,26 +785,29 @@ namespace Generator
                 {
                     while (reader.Read())
                     {
-                        if (!reader.IsDBNull("violation_name")) // проверяем что порода не пустая
+                        if (!reader.IsDBNull("violation_name")) // проверяем что не пустj
                         {
-                            // добавляем в словарик запись, в качестве ключа название породы, в качестве значение количество
+                            // добавляем в словарик запись, в качестве ключа нарушение, в качестве значение количество
                             statistics.violGroupCount[reader.GetString("violation_name")] = reader.GetInt32("count");
                         }
                     }
                 }
-
-                command = new SqlCommand("SELECT violation_name, count(*) as count FROM Violation Where violation_name like 'Не оказал сопротивление' or violation_name like 'Оказал сопротивление' or violation_name like 'Удалось не задержать' or violation_name like 'Удалось задержать' GROUP BY violation_name ", connection);
-                statistics.violTypeCount = new Dictionary<string, int>();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
+                    command = new SqlCommand("SELECT violation_name, count(*) as count FROM Violation Where violation_name = 'Не оказал сопротивление' or violation_name = 'Оказал сопротивление' or violation_name = 'Удалось не задержать' or violation_name = 'Удалось задержать' GROUP BY violation_name ", connection);
+                    statistics.violTypeCount = new Dictionary<string, int>();
+                    using (var reader = command.ExecuteReader())
                     {
-                        if (!reader.IsDBNull("violation_name")) // проверяем что порода не пустая
+                        while (reader.Read())
                         {
-                            // добавляем в словарик запись, в качестве ключа название породы, в качестве значение количество
-                            statistics.violTypeCount[reader.GetString("violation_name")] = reader.GetInt32("count");
+                            if (!reader.IsDBNull("violation_name")) // проверяем что не пусто
+                            {
+                                statistics.violTypeCount[reader.GetString("violation_name")] = reader.GetInt32("count");
+                            }
                         }
                     }
+                }
+                catch
+                {
+
                 }
             }
 
@@ -758,12 +839,17 @@ namespace Generator
     );
 
             connection.Close();
-            lblStatistics.Text = $"Автомобилей в базе: {statistics.carCount} \n"
-        + $"Водителей в базе: { statistics.driverCount}\n"
+            lblStatistics.Text = $"Водителей в базе: { statistics.driverCount}\n"
+        + $"Автомобилей в базе: {statistics.carCount} \n"
         + $"Нарушений зарегистрировано: {statistics.violCount}\n"
             + $"{violInfo}" +
             "===================" +
             $"\n{violTypeInfo}";
+        }
+
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

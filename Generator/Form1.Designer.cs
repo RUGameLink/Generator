@@ -39,6 +39,7 @@ namespace Generator
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lblLoad = new System.Windows.Forms.Label();
             this.btnDelViol = new System.Windows.Forms.Button();
             this.btnGetViol = new System.Windows.Forms.Button();
             this.btnDelCar = new System.Windows.Forms.Button();
@@ -46,6 +47,8 @@ namespace Generator
             this.btnDelDriver = new System.Windows.Forms.Button();
             this.btnGetDriver = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.chkbDrTrans = new System.Windows.Forms.CheckBox();
+            this.lblDrInfo = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.pbDrGenerator = new System.Windows.Forms.ProgressBar();
@@ -80,7 +83,8 @@ namespace Generator
             this.label10 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.lblStatistics = new System.Windows.Forms.RichTextBox();
-            this.lblLoad = new System.Windows.Forms.Label();
+            this.chkbCarTrans = new System.Windows.Forms.CheckBox();
+            this.lblDrInfo2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgName)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -193,6 +197,17 @@ namespace Generator
             this.tabPage1.Text = "Запросы";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // lblLoad
+            // 
+            this.lblLoad.AutoSize = true;
+            this.lblLoad.ForeColor = System.Drawing.Color.Red;
+            this.lblLoad.Location = new System.Drawing.Point(519, 237);
+            this.lblLoad.Name = "lblLoad";
+            this.lblLoad.Size = new System.Drawing.Size(64, 15);
+            this.lblLoad.TabIndex = 11;
+            this.lblLoad.Text = "Загрузка...";
+            this.lblLoad.Visible = false;
+            // 
             // btnDelViol
             // 
             this.btnDelViol.Location = new System.Drawing.Point(422, 241);
@@ -255,6 +270,8 @@ namespace Generator
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.chkbDrTrans);
+            this.tabPage2.Controls.Add(this.lblDrInfo);
             this.tabPage2.Controls.Add(this.label2);
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.pbDrGenerator);
@@ -269,6 +286,25 @@ namespace Generator
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Генератор водителей";
             this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabPage2.Click += new System.EventHandler(this.tabPage2_Click);
+            // 
+            // chkbDrTrans
+            // 
+            this.chkbDrTrans.AutoSize = true;
+            this.chkbDrTrans.Location = new System.Drawing.Point(143, 356);
+            this.chkbDrTrans.Name = "chkbDrTrans";
+            this.chkbDrTrans.Size = new System.Drawing.Size(99, 19);
+            this.chkbDrTrans.TabIndex = 16;
+            this.chkbDrTrans.Text = "В транзакции";
+            this.chkbDrTrans.UseVisualStyleBackColor = true;
+            // 
+            // lblDrInfo
+            // 
+            this.lblDrInfo.AutoSize = true;
+            this.lblDrInfo.Location = new System.Drawing.Point(298, 396);
+            this.lblDrInfo.Name = "lblDrInfo";
+            this.lblDrInfo.Size = new System.Drawing.Size(0, 15);
+            this.lblDrInfo.TabIndex = 15;
             // 
             // label2
             // 
@@ -345,6 +381,8 @@ namespace Generator
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.lblDrInfo2);
+            this.tabPage3.Controls.Add(this.chkbCarTrans);
             this.tabPage3.Controls.Add(this.pbDrGenerator2);
             this.tabPage3.Controls.Add(this.btnGenerate2);
             this.tabPage3.Controls.Add(this.label5);
@@ -631,16 +669,23 @@ namespace Generator
             this.lblStatistics.TabIndex = 9;
             this.lblStatistics.Text = "";
             // 
-            // lblLoad
+            // chkbCarTrans
             // 
-            this.lblLoad.AutoSize = true;
-            this.lblLoad.ForeColor = System.Drawing.Color.Red;
-            this.lblLoad.Location = new System.Drawing.Point(519, 237);
-            this.lblLoad.Name = "lblLoad";
-            this.lblLoad.Size = new System.Drawing.Size(64, 15);
-            this.lblLoad.TabIndex = 11;
-            this.lblLoad.Text = "Загрузка...";
-            this.lblLoad.Visible = false;
+            this.chkbCarTrans.AutoSize = true;
+            this.chkbCarTrans.Location = new System.Drawing.Point(137, 354);
+            this.chkbCarTrans.Name = "chkbCarTrans";
+            this.chkbCarTrans.Size = new System.Drawing.Size(99, 19);
+            this.chkbCarTrans.TabIndex = 7;
+            this.chkbCarTrans.Text = "В транзакции";
+            this.chkbCarTrans.UseVisualStyleBackColor = true;
+            // 
+            // lblDrInfo2
+            // 
+            this.lblDrInfo2.AutoSize = true;
+            this.lblDrInfo2.Location = new System.Drawing.Point(271, 397);
+            this.lblDrInfo2.Name = "lblDrInfo2";
+            this.lblDrInfo2.Size = new System.Drawing.Size(0, 15);
+            this.lblDrInfo2.TabIndex = 8;
             // 
             // Form1
             // 
@@ -730,6 +775,10 @@ namespace Generator
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.RichTextBox lblStatistics;
         private System.Windows.Forms.Label lblLoad;
+        private System.Windows.Forms.Label lblDrInfo;
+        private System.Windows.Forms.CheckBox chkbDrTrans;
+        private System.Windows.Forms.CheckBox chkbCarTrans;
+        private System.Windows.Forms.Label lblDrInfo2;
     }
 }
 
