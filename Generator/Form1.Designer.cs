@@ -57,6 +57,8 @@ namespace Generator
             this.label22 = new System.Windows.Forms.Label();
             this.upCount = new System.Windows.Forms.NumericUpDown();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.lblDrInfo2 = new System.Windows.Forms.Label();
+            this.chkbCarTrans = new System.Windows.Forms.CheckBox();
             this.pbDrGenerator2 = new System.Windows.Forms.ProgressBar();
             this.btnGenerate2 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -83,8 +85,6 @@ namespace Generator
             this.label10 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.lblStatistics = new System.Windows.Forms.RichTextBox();
-            this.chkbCarTrans = new System.Windows.Forms.CheckBox();
-            this.lblDrInfo2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgName)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -397,6 +397,24 @@ namespace Generator
             this.tabPage3.Text = "Генератор автомобилей";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // lblDrInfo2
+            // 
+            this.lblDrInfo2.AutoSize = true;
+            this.lblDrInfo2.Location = new System.Drawing.Point(271, 397);
+            this.lblDrInfo2.Name = "lblDrInfo2";
+            this.lblDrInfo2.Size = new System.Drawing.Size(0, 15);
+            this.lblDrInfo2.TabIndex = 8;
+            // 
+            // chkbCarTrans
+            // 
+            this.chkbCarTrans.AutoSize = true;
+            this.chkbCarTrans.Location = new System.Drawing.Point(137, 354);
+            this.chkbCarTrans.Name = "chkbCarTrans";
+            this.chkbCarTrans.Size = new System.Drawing.Size(99, 19);
+            this.chkbCarTrans.TabIndex = 7;
+            this.chkbCarTrans.Text = "В транзакции";
+            this.chkbCarTrans.UseVisualStyleBackColor = true;
+            // 
             // pbDrGenerator2
             // 
             this.pbDrGenerator2.Location = new System.Drawing.Point(16, 394);
@@ -609,9 +627,9 @@ namespace Generator
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(138, 43);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(107, 15);
+            this.label6.Size = new System.Drawing.Size(115, 15);
             this.label6.TabIndex = 3;
-            this.label6.Text = "Групп нарушений";
+            this.label6.Text = "Привлекался ранее";
             // 
             // tbViolCup
             // 
@@ -668,24 +686,6 @@ namespace Generator
             this.lblStatistics.Size = new System.Drawing.Size(260, 433);
             this.lblStatistics.TabIndex = 9;
             this.lblStatistics.Text = "";
-            // 
-            // chkbCarTrans
-            // 
-            this.chkbCarTrans.AutoSize = true;
-            this.chkbCarTrans.Location = new System.Drawing.Point(137, 354);
-            this.chkbCarTrans.Name = "chkbCarTrans";
-            this.chkbCarTrans.Size = new System.Drawing.Size(99, 19);
-            this.chkbCarTrans.TabIndex = 7;
-            this.chkbCarTrans.Text = "В транзакции";
-            this.chkbCarTrans.UseVisualStyleBackColor = true;
-            // 
-            // lblDrInfo2
-            // 
-            this.lblDrInfo2.AutoSize = true;
-            this.lblDrInfo2.Location = new System.Drawing.Point(271, 397);
-            this.lblDrInfo2.Name = "lblDrInfo2";
-            this.lblDrInfo2.Size = new System.Drawing.Size(0, 15);
-            this.lblDrInfo2.TabIndex = 8;
             // 
             // Form1
             // 

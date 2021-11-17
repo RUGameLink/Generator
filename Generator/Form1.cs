@@ -578,111 +578,97 @@ namespace Generator
 
             Faker faker = new("ru");
             string viol = violationGroup[rnd.Next(0, violationGroup.Length)];
+            var cuptureCount = rnd.Next(ViolCup, ViolCupValue + 1);
 
             string violType = "";
 
             var violCount = rnd.Next(QuantityGr, QuantityGrValue + 1);
 
             var violTypeCount = rnd.Next(Quantity, QuantityValue + 1);
-            for (var a = 1; a <= violCount; ++a)
-            {//Первый уровень иерархии
-                SqlCommand command = new($@"INSERT  Violation OUTPUT inserted.id VALUES(@viol, null)", connection); 
-                command.Parameters.Add("@viol", SqlDbType.Text);
-                command.Parameters["@viol"].Value = viol;
 
-                int violId = (int)command.ExecuteScalar();
+            SqlCommand command = new($@"INSERT  Violation OUTPUT inserted.id VALUES(@viol, null)", connection);
+            command.Parameters.Add("@viol", SqlDbType.Text);
+            command.Parameters["@viol"].Value = viol;
+            int violId = (int)command.ExecuteScalar();
 
-
-                for (var i = 1; i <= violTypeCount; ++i)
+            for (var a = 1; a <= violTypeCount; ++a)
+            {
+                switch (viol)
                 {
-                    //violType = viol switch
-                    //{
-                    //    "Пересечение" => violationType1[rnd.Next(0, violationType1.Length)],
-                    //    _ => ""
-                    //};
-                    switch (viol)
+                    case "Пересечение":
+                        violType = violationType1[rnd.Next(0, violationType1.Length)];
+                        break;
+                    case "Превышение скорости":
+                        {
+                            violType = violationType2[rnd.Next(0, violationType2.Length)];
+                        }
+                        break;
+                    case "Вождение":
+                        {
+                            violType = violationType3[rnd.Next(0, violationType3.Length)];
+                        }
+                        break;
+                    case "Обгон":
+                        {
+                            violType = violationType4[rnd.Next(0, violationType4.Length)];
+                        }
+                        break;
+                }
+                command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
+                command.Parameters.Add("@violType", SqlDbType.Text);
+                command.Parameters["@violType"].Value = violType;
+                command.Parameters.Add("@violId", SqlDbType.Int);
+                command.Parameters["@violId"].Value = violId;
+
+                int violTypeId = (int)command.ExecuteScalar();
+
+                for(var i = 1;i <= cuptureCount; ++i)
+                {
+                    string cupture = cuptureOffernder[rnd.Next(0, cuptureOffernder.Length)];
+
+                    command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@cupture, @violTypeId)", connection);
+                    command.Parameters.Add("@cupture", SqlDbType.Text);
+                    command.Parameters["@cupture"].Value = cupture;
+                    command.Parameters.Add("@violTypeId", SqlDbType.Int);
+                    command.Parameters["@violTypeId"].Value = violTypeId;
+                    int cuptId = (int)command.ExecuteScalar();
+
+                    for(var j = 1; j <= violCount; j++)
                     {
-                        case "Пересечение":
-                                violType = violationType1[rnd.Next(0, violationType1.Length)];
-                            break;
-                        case "Превышение скорости":
-                            {
-                                violType = violationType2[rnd.Next(0, violationType2.Length)];
-                            }
-                            break;
-                        case "Вождение":
-                            {
-                                violType = violationType3[rnd.Next(0, violationType3.Length)];
-                            }
-                            break;
-                        case "Обгон":
-                            {
-                                violType = violationType4[rnd.Next(0, violationType4.Length)];
-                            }
-                            break;
-                    }
-
-                    if (aff == true && kill == true)
-                    {//Второй уровень иерархии
-                        var affected = faker.Random.Int(1, 10);
-                        var killed = faker.Random.Int(1, 10);
-                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-                        command.Parameters.Add("@violType", SqlDbType.Text);
-                        command.Parameters["@violType"].Value = violType + $" Пострадавшие: {affected}, Смертей: {killed}";
-                        command.Parameters.Add("@violId", SqlDbType.Int);
-                        command.Parameters["@violId"].Value = violId;
-                    }
-                    else if(aff == true && kill == false)
-                    {
-                        var affected = faker.Random.Int(1, 10);
-                        var killed = 0;
-                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-                        command.Parameters.Add("@violType", SqlDbType.Text);
-                        command.Parameters["@violType"].Value = violType + $" Пострадавшие: {affected}, Смертей: {killed}";
-                        command.Parameters.Add("@violId", SqlDbType.Int);
-                        command.Parameters["@violId"].Value = violId;
-                    }
-                    else if(aff == false && kill == true)
-                    {
-                        var affected = 0;
-                        var killed = faker.Random.Int(1, 10);
-                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-                        command.Parameters.Add("@violType", SqlDbType.Text);
-                        command.Parameters["@violType"].Value = violType + $" Пострадавшие: {affected}, Смертей: {killed}";
-                        command.Parameters.Add("@violId", SqlDbType.Int);
-                        command.Parameters["@violId"].Value = violId;
-                    }
-                    else
-                    {
-                        var affected = 0;
-                        var killed = 0;
-                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-                        command.Parameters.Add("@violType", SqlDbType.Text);
-                        command.Parameters["@violType"].Value = violType + $" Пострадавшие: {affected}, Смертей: {killed}";
-                        command.Parameters.Add("@violId", SqlDbType.Int);
-                        command.Parameters["@violId"].Value = violId;
-                    }
-
-                        
-
-                    int violTypeId = (int)command.ExecuteScalar();
-
-                    var cuptureCount = rnd.Next(ViolCup, ViolCupValue + 1);
-
-                    for (var j = 1; j <= cuptureCount; ++j)
-                    {//Третий уровень иерархии
-                        string cupture = cuptureOffernder[rnd.Next(0, cuptureOffernder.Length)];
-
-                        command = new($@"INSERT INTO Violation VALUES(@cupture, @violTypeId)", connection);
-                        command.Parameters.Add("@cupture", SqlDbType.Text);
-                        command.Parameters["@cupture"].Value = cupture;
-                        command.Parameters.Add("@violTypeId", SqlDbType.Int);
-                        command.Parameters["@violTypeId"].Value = violTypeId;
+                        command = new($@"INSERT INTO Violation VALUES(@attracted, @cuptId)", connection);
+                        int attracted = faker.Random.Int(0, 3);
+                        command.Parameters.Add("@attracted", SqlDbType.Text);
+                        command.Parameters["@attracted"].Value = $"Количество нарушений до этого: {attracted}";
+                        command.Parameters.Add("@cuptId", SqlDbType.Int);
+                        command.Parameters["@cuptId"].Value = cuptId;
                         command.ExecuteNonQuery();
                     }
+                }
 
+                if(aff == true)
+                {
+                    var affected = faker.Random.Int(1, 10);
+
+                    command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
+                    command.Parameters.Add("@violType", SqlDbType.Text);
+                    command.Parameters["@violType"].Value = $" Пострадавшие: {affected}";
+                    command.Parameters.Add("@violId", SqlDbType.Int);
+                    command.Parameters["@violId"].Value = violId;
+                    command.ExecuteNonQuery();
+                }
+                if (kill == true)
+                {
+                    var killed = faker.Random.Int(1, 10);
+
+                    command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
+                    command.Parameters.Add("@violType", SqlDbType.Text);
+                    command.Parameters["@violType"].Value = $" Смертей: {killed}";
+                    command.Parameters.Add("@violId", SqlDbType.Int);
+                    command.Parameters["@violId"].Value = violId;
+                    command.ExecuteNonQuery();
                 }
             }
+
         }
 
         private async  void btnActionSql_Click(object sender, EventArgs e) //Обслуживание кнопок Выдачи и Удаления
