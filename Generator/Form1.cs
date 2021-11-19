@@ -554,7 +554,100 @@ namespace Generator
 
                 for (var i = 0; i < count; ++i)
                 {
-                    GenerateViolation(connection, QuantityGr, QuantityGrValue, Quantity, QuantityValue, ViolCup, ViolCupValue, aff, kill);
+                    Random rnd = new();
+
+                    Faker faker = new("ru");
+                    string viol = violationGroup[rnd.Next(0, violationGroup.Length)];
+                    var cuptureCount = rnd.Next(ViolCup, ViolCupValue + 1);
+
+                    string violType = "";
+
+                    var violCount = rnd.Next(QuantityGr, QuantityGrValue + 1);
+
+                    var violTypeCount = rnd.Next(Quantity, QuantityValue + 1);
+
+                    SqlCommand command = new($@"INSERT  Violation OUTPUT inserted.id VALUES(@viol, null)", connection);
+                    command.Parameters.Add("@viol", SqlDbType.Text);
+                    command.Parameters["@viol"].Value = viol;
+                    int violId = (int)command.ExecuteScalar();
+
+                    for (var a = 1; a <= violTypeCount; ++a)
+                    {
+                        switch (viol)
+                        {
+                            case "Пересечение":
+                                violType = violationType1[rnd.Next(0, violationType1.Length)];
+                                break;
+                            case "Превышение скорости":
+                                {
+                                    violType = violationType2[rnd.Next(0, violationType2.Length)];
+                                }
+                                break;
+                            case "Вождение":
+                                {
+                                    violType = violationType3[rnd.Next(0, violationType3.Length)];
+                                }
+                                break;
+                            case "Обгон":
+                                {
+                                    violType = violationType4[rnd.Next(0, violationType4.Length)];
+                                }
+                                break;
+                        }
+                        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
+                        command.Parameters.Add("@violType", SqlDbType.Text);
+                        command.Parameters["@violType"].Value = violType;
+                        command.Parameters.Add("@violId", SqlDbType.Int);
+                        command.Parameters["@violId"].Value = violId;
+
+                        int violTypeId = (int)command.ExecuteScalar();
+
+                        for (var b = 1; b <= cuptureCount; ++b)
+                        {
+                            string cupture = cuptureOffernder[rnd.Next(0, cuptureOffernder.Length)];
+
+                            command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@cupture, @violTypeId)", connection);
+                            command.Parameters.Add("@cupture", SqlDbType.Text);
+                            command.Parameters["@cupture"].Value = cupture;
+                            command.Parameters.Add("@violTypeId", SqlDbType.Int);
+                            command.Parameters["@violTypeId"].Value = violTypeId;
+                            int cuptId = (int)command.ExecuteScalar();
+
+                            for (var j = 1; j <= violCount; j++)
+                            {
+                                command = new($@"INSERT INTO Violation VALUES(@attracted, @cuptId)", connection);
+                                int attracted = faker.Random.Int(0, 3);
+                                command.Parameters.Add("@attracted", SqlDbType.Text);
+                                command.Parameters["@attracted"].Value = $"Количество нарушений до этого: {attracted}";
+                                command.Parameters.Add("@cuptId", SqlDbType.Int);
+                                command.Parameters["@cuptId"].Value = cuptId;
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        if (aff == true)
+                        {
+                            var affected = faker.Random.Int(1, 10);
+
+                            command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
+                            command.Parameters.Add("@violType", SqlDbType.Text);
+                            command.Parameters["@violType"].Value = $" Пострадавшие: {affected}";
+                            command.Parameters.Add("@violId", SqlDbType.Int);
+                            command.Parameters["@violId"].Value = violId;
+                            command.ExecuteNonQuery();
+                        }
+                        if (kill == true)
+                        {
+                            var killed = faker.Random.Int(1, 10);
+
+                            command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
+                            command.Parameters.Add("@violType", SqlDbType.Text);
+                            command.Parameters["@violType"].Value = $" Смертей: {killed}";
+                            command.Parameters.Add("@violId", SqlDbType.Int);
+                            command.Parameters["@violId"].Value = violId;
+                            command.ExecuteNonQuery();
+                        }
+                    }
                     if (cancellationToken.IsCancellationRequested)
                     {
                         return; // то выходим их функции
@@ -568,300 +661,6 @@ namespace Generator
             }
             MessageBox.Show("Все готово, мой лорд");
         }
-
-        private void GenerateViolation(SqlConnection connection,
-                                       int QuantityGr,
-                                       int QuantityGrValue,
-                                       int Quantity,
-                                       int QuantityValue,
-                                       int ViolCup,
-                                       int ViolCupValue,
-                                       bool aff,
-                                       bool kill) //Генератор Нарушений
-        {
-            Random rnd = new();
-
-            Faker faker = new("ru");
-            string viol = violationGroup[rnd.Next(0, violationGroup.Length)];
-            var cuptureCount = rnd.Next(ViolCup, ViolCupValue + 1);
-
-            string violType = "";
-
-            var violCount = rnd.Next(QuantityGr, QuantityGrValue + 1);
-
-            var violTypeCount = rnd.Next(Quantity, QuantityValue + 1);
-
-            SqlCommand command = new($@"INSERT  Violation OUTPUT inserted.id VALUES(@viol, null)", connection);
-            command.Parameters.Add("@viol", SqlDbType.Text);
-            command.Parameters["@viol"].Value = viol;
-            int violId = (int)command.ExecuteScalar();
-
-            for (var a = 1; a <= violTypeCount; ++a)
-            {
-                switch (viol)
-                {
-                    case "Пересечение":
-                        violType = violationType1[rnd.Next(0, violationType1.Length)];
-                        break;
-                    case "Превышение скорости":
-                        {
-                            violType = violationType2[rnd.Next(0, violationType2.Length)];
-                        }
-                        break;
-                    case "Вождение":
-                        {
-                            violType = violationType3[rnd.Next(0, violationType3.Length)];
-                        }
-                        break;
-                    case "Обгон":
-                        {
-                            violType = violationType4[rnd.Next(0, violationType4.Length)];
-                        }
-                        break;
-                }
-                command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-                command.Parameters.Add("@violType", SqlDbType.Text);
-                command.Parameters["@violType"].Value = violType;
-                command.Parameters.Add("@violId", SqlDbType.Int);
-                command.Parameters["@violId"].Value = violId;
-
-                int violTypeId = (int)command.ExecuteScalar();
-
-                for (var i = 1; i <= cuptureCount; ++i)
-                {
-                    string cupture = cuptureOffernder[rnd.Next(0, cuptureOffernder.Length)];
-
-                    command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@cupture, @violTypeId)", connection);
-                    command.Parameters.Add("@cupture", SqlDbType.Text);
-                    command.Parameters["@cupture"].Value = cupture;
-                    command.Parameters.Add("@violTypeId", SqlDbType.Int);
-                    command.Parameters["@violTypeId"].Value = violTypeId;
-                    int cuptId = (int)command.ExecuteScalar();
-
-                    for (var j = 1; j <= violCount; j++)
-                    {
-                        command = new($@"INSERT INTO Violation VALUES(@attracted, @cuptId)", connection);
-                        int attracted = faker.Random.Int(0, 3);
-                        command.Parameters.Add("@attracted", SqlDbType.Text);
-                        command.Parameters["@attracted"].Value = $"Количество нарушений до этого: {attracted}";
-                        command.Parameters.Add("@cuptId", SqlDbType.Int);
-                        command.Parameters["@cuptId"].Value = cuptId;
-                        command.ExecuteNonQuery();
-                    }
-                }
-
-                if (aff == true)
-                {
-                    var affected = faker.Random.Int(1, 10);
-
-                    command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-                    command.Parameters.Add("@violType", SqlDbType.Text);
-                    command.Parameters["@violType"].Value = $" Пострадавшие: {affected}";
-                    command.Parameters.Add("@violId", SqlDbType.Int);
-                    command.Parameters["@violId"].Value = violId;
-                    command.ExecuteNonQuery();
-                }
-                if (kill == true)
-                {
-                    var killed = faker.Random.Int(1, 10);
-
-                    command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-                    command.Parameters.Add("@violType", SqlDbType.Text);
-                    command.Parameters["@violType"].Value = $" Смертей: {killed}";
-                    command.Parameters.Add("@violId", SqlDbType.Int);
-                    command.Parameters["@violId"].Value = violId;
-                    command.ExecuteNonQuery();
-                }
-            }
-
-        }
-
-        //private void startGenerViol(int count, SqlConnection connection, int QuantityGr, int QuantityGrValue, int Quantity, int QuantityValue, int ViolCup, int ViolCupValue, bool aff, bool kill, IProgress<progressInfo> progress, CancellationTokenSource cancellationToken)
-        //{
-        //    using (connection)
-        //    {
-        //        connection.Open();
-        //        SqlCommand command = null;
-        //     //   var transaction = connection.BeginTransaction();
-
-        //        for (var i = 0; i < count; ++i)
-        //        {
-        //            GenerateViolation(connection, QuantityGr, QuantityGrValue, Quantity, QuantityValue, ViolCup, ViolCupValue, aff, kill, progress);
-        //            if (cancellationToken.IsCancellationRequested)
-        //            {
-        //                return; // то выходим их функции
-        //            }
-
-        //            //if (chkbViolTrans.Checked)
-        //            //    command.Transaction = transaction;
-
-        //            //var info = $"Автомобилей в транзакции {command.ExecuteScalar()}";
-        //            //progress?.Report(new progressInfo
-        //            //{
-        //            //    value = i + 1,
-        //            //    info = info,
-        //            //});
-        //            Thread.Sleep(30);
-        //        }
-        //        //if (chkbViolTrans.Checked)
-        //        //{
-        //        //    transaction.Commit();
-        //        //}
-        //        connection.Close();
-        //    }
-        //    MessageBox.Show("Все готово, мой лорд");
-        //}
-
-        //private void GenerateViolation(SqlConnection connection, 
-        //                               int QuantityGr, 
-        //                               int QuantityGrValue, 
-        //                               int Quantity, 
-        //                               int QuantityValue, 
-        //                               int ViolCup,
-        //                               int ViolCupValue,
-        //                               bool aff,
-        //                               bool kill,
-        //                               IProgress<progressInfo> progress) //Генератор Нарушений
-        //{
-        //    Random rnd = new();
-        //    var transaction = connection.BeginTransaction();
-        //    Faker faker = new("ru");
-        //    string viol = violationGroup[rnd.Next(0, violationGroup.Length)];
-        //    var cuptureCount = rnd.Next(ViolCup, ViolCupValue + 1);
-
-        //    string violType = "";
-
-        //    var violCount = rnd.Next(QuantityGr, QuantityGrValue + 1);
-
-        //    var violTypeCount = rnd.Next(Quantity, QuantityValue + 1);
-
-        //    SqlCommand command = new($@"INSERT  Violation OUTPUT inserted.id VALUES(@viol, null)", connection);
-        //    command.Parameters.Add("@viol", SqlDbType.Text);
-        //    command.Parameters["@viol"].Value = viol;
-
-        //    if (chkbViolTrans.Checked)
-        //    {
-        //        command.Transaction = transaction;
-
-        //    }
-
-        //    int violId = (int)command.ExecuteScalar();
-
-        //    for (var a = 1; a <= violTypeCount; ++a)
-        //    {
-        //        switch (viol)
-        //        {
-        //            case "Пересечение":
-        //                violType = violationType1[rnd.Next(0, violationType1.Length)];
-        //                break;
-        //            case "Превышение скорости":
-        //                {
-        //                    violType = violationType2[rnd.Next(0, violationType2.Length)];
-        //                }
-        //                break;
-        //            case "Вождение":
-        //                {
-        //                    violType = violationType3[rnd.Next(0, violationType3.Length)];
-        //                }
-        //                break;
-        //            case "Обгон":
-        //                {
-        //                    violType = violationType4[rnd.Next(0, violationType4.Length)];
-        //                }
-        //                break;
-        //        }
-        //        command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-        //        command.Parameters.Add("@violType", SqlDbType.Text);
-        //        command.Parameters["@violType"].Value = violType;
-        //        command.Parameters.Add("@violId", SqlDbType.Int);
-        //        command.Parameters["@violId"].Value = violId;
-        //        if (chkbViolTrans.Checked)
-        //        {
-        //            command.Transaction = transaction;
-
-        //        }
-        //        int violTypeId = (int)command.ExecuteScalar();
-
-        //        for(var i = 1;i <= cuptureCount; ++i)
-        //        {
-        //            string cupture = cuptureOffernder[rnd.Next(0, cuptureOffernder.Length)];
-
-        //            command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@cupture, @violTypeId)", connection);
-        //            command.Parameters.Add("@cupture", SqlDbType.Text);
-        //            command.Parameters["@cupture"].Value = cupture;
-        //            command.Parameters.Add("@violTypeId", SqlDbType.Int);
-        //            command.Parameters["@violTypeId"].Value = violTypeId;
-        //            if (chkbViolTrans.Checked)
-        //            {
-        //                command.Transaction = transaction;
-
-        //            }
-        //            int cuptId = (int)command.ExecuteScalar();
-
-        //            for(var j = 1; j <= violCount; j++)
-        //            {
-        //                command = new($@"INSERT INTO Violation VALUES(@attracted, @cuptId)", connection);
-        //                int attracted = faker.Random.Int(0, 3);
-        //                command.Parameters.Add("@attracted", SqlDbType.Text);
-        //                command.Parameters["@attracted"].Value = $"Количество нарушений до этого: {attracted}";
-        //                command.Parameters.Add("@cuptId", SqlDbType.Int);
-        //                command.Parameters["@cuptId"].Value = cuptId;
-        //                if (chkbViolTrans.Checked)
-        //                {
-        //                    command.Transaction = transaction;
-
-        //                }
-        //                command.ExecuteNonQuery();
-        //            }
-        //        }
-
-        //        if(aff == true)
-        //        {
-        //            var affected = faker.Random.Int(1, 10);
-
-        //            command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-        //            command.Parameters.Add("@violType", SqlDbType.Text);
-        //            command.Parameters["@violType"].Value = $" Пострадавшие: {affected}";
-        //            command.Parameters.Add("@violId", SqlDbType.Int);
-        //            command.Parameters["@violId"].Value = violId;
-        //            if (chkbViolTrans.Checked)
-        //            {
-        //                command.Transaction = transaction;
-
-        //            }
-        //            command.ExecuteNonQuery();
-        //        }
-        //        if (kill == true)
-        //        {
-        //            var killed = faker.Random.Int(1, 10);
-
-        //            command = new($@"INSERT INTO Violation OUTPUT inserted.id VALUES(@violType, @violId)", connection);
-        //            command.Parameters.Add("@violType", SqlDbType.Text);
-        //            command.Parameters["@violType"].Value = $" Смертей: {killed}";
-        //            command.Parameters.Add("@violId", SqlDbType.Int);
-        //            command.Parameters["@violId"].Value = violId;
-        //            if (chkbViolTrans.Checked)
-        //            {
-        //                command.Transaction = transaction;
-
-        //            }
-        //            command.ExecuteNonQuery();
-        //        }
-
-        //        var info = $"Автомобилей в транзакции {command.ExecuteScalar()}";
-        //        progress?.Report(new progressInfo
-        //        {
-        //            value = a + 1,
-        //            info = info,
-        //        });
-
-        //    }
-        //    if (chkbViolTrans.Checked)
-        //    {
-        //        transaction.Commit();
-        //    }
-
-        //}
 
         private async  void btnActionSql_Click(object sender, EventArgs e) //Обслуживание кнопок Выдачи и Удаления
         {
