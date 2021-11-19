@@ -67,6 +67,8 @@ namespace Generator
             this.label3 = new System.Windows.Forms.Label();
             this.tbGender2 = new System.Windows.Forms.TrackBar();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.chkbViolTrans = new System.Windows.Forms.CheckBox();
+            this.lblViolGen = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.upCountViol = new System.Windows.Forms.NumericUpDown();
             this.lblViol = new System.Windows.Forms.Label();
@@ -490,6 +492,8 @@ namespace Generator
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.chkbViolTrans);
+            this.tabPage4.Controls.Add(this.lblViolGen);
             this.tabPage4.Controls.Add(this.label9);
             this.tabPage4.Controls.Add(this.upCountViol);
             this.tabPage4.Controls.Add(this.lblViol);
@@ -511,6 +515,24 @@ namespace Generator
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Генератор нарушений";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // chkbViolTrans
+            // 
+            this.chkbViolTrans.AutoSize = true;
+            this.chkbViolTrans.Location = new System.Drawing.Point(111, 365);
+            this.chkbViolTrans.Name = "chkbViolTrans";
+            this.chkbViolTrans.Size = new System.Drawing.Size(83, 19);
+            this.chkbViolTrans.TabIndex = 16;
+            this.chkbViolTrans.Text = "checkBox1";
+            this.chkbViolTrans.UseVisualStyleBackColor = true;
+            // 
+            // lblViolGen
+            // 
+            this.lblViolGen.AutoSize = true;
+            this.lblViolGen.Location = new System.Drawing.Point(306, 395);
+            this.lblViolGen.Name = "lblViolGen";
+            this.lblViolGen.Size = new System.Drawing.Size(0, 15);
+            this.lblViolGen.TabIndex = 15;
             // 
             // label9
             // 
@@ -779,6 +801,8 @@ namespace Generator
         private System.Windows.Forms.CheckBox chkbDrTrans;
         private System.Windows.Forms.CheckBox chkbCarTrans;
         private System.Windows.Forms.Label lblDrInfo2;
+        private System.Windows.Forms.Label lblViolGen;
+        private System.Windows.Forms.CheckBox chkbViolTrans;
     }
 }
 
