@@ -521,9 +521,9 @@ namespace Generator
             this.chkbViolTrans.AutoSize = true;
             this.chkbViolTrans.Location = new System.Drawing.Point(111, 365);
             this.chkbViolTrans.Name = "chkbViolTrans";
-            this.chkbViolTrans.Size = new System.Drawing.Size(83, 19);
+            this.chkbViolTrans.Size = new System.Drawing.Size(99, 19);
             this.chkbViolTrans.TabIndex = 16;
-            this.chkbViolTrans.Text = "checkBox1";
+            this.chkbViolTrans.Text = "В транзакции";
             this.chkbViolTrans.UseVisualStyleBackColor = true;
             // 
             // lblViolGen

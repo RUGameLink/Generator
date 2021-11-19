@@ -246,7 +246,6 @@ namespace Generator
                                      IProgress<progressInfo> progress, 
                                      CancellationTokenSource cancellationToken)
         {
-
             using (connection)
             {
                 connection.Open();
@@ -523,16 +522,16 @@ namespace Generator
             var ViolCup = tbViolCup.Minimum;
             var ViolCupValue = tbViolCup.Value;
             btGenerateViol.Text = "Отмена генерации";
-            var progress = new Progress<int>(value =>
-            {
-                // меняем значение прогрессбара
-                pbViol.Value = value;
-            });
-            //var progress = new Progress<progressInfo>(progress =>
+            //var progress = new Progress<int>(value =>
             //{
-            //    pbDrGenerator.Value = progress.value; // прогресс пихаем в прогресс бар
-            //    lblDrInfo.Text = progress.info; // а текст пихаем в лейбл
+            //    // меняем значение прогрессбара
+            //    pbViol.Value = value;
             //});
+            var progress = new Progress<progressInfo>(progress =>
+            {
+                pbViol.Value = progress.value; // прогресс пихаем в прогресс бар
+                lblViolGen.Text = progress.info; // а текст пихаем в лейбл
+            });
             var count = (int)upCountViol.Value;
             await Task.Run(() =>
             {
@@ -545,12 +544,27 @@ namespace Generator
             
         }
 
-        private void startGenerViol(int count, SqlConnection connection, int QuantityGr, int QuantityGrValue, int Quantity, int QuantityValue, int ViolCup, int ViolCupValue, bool aff, bool kill, IProgress<int> progress, CancellationTokenSource cancellationToken)
+        private void startGenerViol(int count, SqlConnection connection,
+                                    int QuantityGr, 
+                                    int QuantityGrValue, 
+                                    int Quantity, 
+                                    int QuantityValue, 
+                                    int ViolCup, 
+                                    int ViolCupValue, 
+                                    bool aff, 
+                                    bool kill,
+                                    IProgress<progressInfo> progress, 
+                                    CancellationTokenSource cancellationToken)
         {
             using (connection)
             {
                 connection.Open();
+                SqlTransaction transaction = null;
 
+                if (chkbViolTrans.Checked)
+                {
+                    transaction = connection.BeginTransaction();
+                }
 
                 for (var i = 0; i < count; ++i)
                 {
@@ -569,6 +583,12 @@ namespace Generator
                     SqlCommand command = new($@"INSERT  Violation OUTPUT inserted.id VALUES(@viol, null)", connection);
                     command.Parameters.Add("@viol", SqlDbType.Text);
                     command.Parameters["@viol"].Value = viol;
+
+                    if (chkbViolTrans.Checked)
+                    {
+                        command.Transaction = transaction;
+
+                    }
                     int violId = (int)command.ExecuteScalar();
 
                     for (var a = 1; a <= violTypeCount; ++a)
@@ -599,7 +619,11 @@ namespace Generator
                         command.Parameters["@violType"].Value = violType;
                         command.Parameters.Add("@violId", SqlDbType.Int);
                         command.Parameters["@violId"].Value = violId;
+                        if (chkbViolTrans.Checked)
+                        {
+                            command.Transaction = transaction;
 
+                        }
                         int violTypeId = (int)command.ExecuteScalar();
 
                         for (var b = 1; b <= cuptureCount; ++b)
@@ -611,6 +635,11 @@ namespace Generator
                             command.Parameters["@cupture"].Value = cupture;
                             command.Parameters.Add("@violTypeId", SqlDbType.Int);
                             command.Parameters["@violTypeId"].Value = violTypeId;
+                            if (chkbViolTrans.Checked)
+                            {
+                                command.Transaction = transaction;
+
+                            }
                             int cuptId = (int)command.ExecuteScalar();
 
                             for (var j = 1; j <= violCount; j++)
@@ -621,6 +650,11 @@ namespace Generator
                                 command.Parameters["@attracted"].Value = $"Количество нарушений до этого: {attracted}";
                                 command.Parameters.Add("@cuptId", SqlDbType.Int);
                                 command.Parameters["@cuptId"].Value = cuptId;
+                                if (chkbViolTrans.Checked)
+                                {
+                                    command.Transaction = transaction;
+
+                                }
                                 command.ExecuteNonQuery();
                             }
                         }
@@ -634,6 +668,11 @@ namespace Generator
                             command.Parameters["@violType"].Value = $" Пострадавшие: {affected}";
                             command.Parameters.Add("@violId", SqlDbType.Int);
                             command.Parameters["@violId"].Value = violId;
+                            if (chkbViolTrans.Checked)
+                            {
+                                command.Transaction = transaction;
+
+                            }
                             command.ExecuteNonQuery();
                         }
                         if (kill == true)
@@ -645,6 +684,11 @@ namespace Generator
                             command.Parameters["@violType"].Value = $" Смертей: {killed}";
                             command.Parameters.Add("@violId", SqlDbType.Int);
                             command.Parameters["@violId"].Value = violId;
+                            if (chkbViolTrans.Checked)
+                            {
+                                command.Transaction = transaction;
+
+                            }
                             command.ExecuteNonQuery();
                         }
                     }
@@ -653,13 +697,29 @@ namespace Generator
                         return; // то выходим их функции
                     }
 
-                    progress?.Report(i + 1);
+                    //progress?.Report(i + 1);
+                    command = new("SELECT count(*) FROM Violation", connection);
+
+                    if (chkbViolTrans.Checked)
+                        command.Transaction = transaction;
+
+                    var info = $"Нарушений в транзакции {command.ExecuteScalar()}";
+                    progress?.Report(new progressInfo
+                    {
+                        value = i + 1,
+                        info = info,
+                    });
                     Thread.Sleep(30);
                 }
 
+                if (chkbViolTrans.Checked)
+                {
+                    transaction.Commit();
+                }
                 connection.Close();
+                MessageBox.Show("Все готово, мой лорд");
             }
-            MessageBox.Show("Все готово, мой лорд");
+
         }
 
         private async  void btnActionSql_Click(object sender, EventArgs e) //Обслуживание кнопок Выдачи и Удаления
